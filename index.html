@@ -121,18 +121,10 @@
         chatBox.scrollTop = chatBox.scrollHeight;
         
         try {
-            // Highly stable alternative serverless endpoint that acts as internet text agent
-            const response = await fetch('https://text.pollinations.ai/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    messages: [
-                        { role: "system", content: "You are Nylon AI, a smart live assistant. You answer based on current data and look up the internet text database to provide clear structured responses." },
-                        { role: "user", content: text }
-                    ],
-                    seed: 42
-                })
-            });
+            // Updated directly to plain text request to bypass JSON formatting errors completely
+            const response = await fetch(`https://text.pollinations.ai/${encodeURIComponent(text)}?system=You are Nylon AI, a smart live assistant built for Waleed. Answer clearly.`);
+            
+            if (!response.ok) throw new Error("Network issue");
             
             const replyText = await response.text();
             document.getElementById(tempId).remove();
@@ -140,11 +132,11 @@
             if (replyText.trim().length > 0) {
                 chatBox.innerHTML += `<div class="message-wrapper ai-wrapper"><div class="message ai-msg">${replyText}</div></div>`;
             } else {
-                throw new Error("Empty response");
+                throw new Error("Empty content");
             }
         } catch (err) {
             document.getElementById(tempId).remove();
-            chatBox.innerHTML += `<div class="message-wrapper ai-wrapper"><div class="message ai-msg" style="color:#ef4444;">Nylon AI connection error. Dubara check karke send karein.</div></div>`;
+            chatBox.innerHTML += `<div class="message-wrapper ai-wrapper"><div class="message ai-msg" style="color:#ef4444;">Nylon AI connection error. Dubara try karein.</div></div>`;
         }
         chatBox.scrollTop = chatBox.scrollHeight;
     }
